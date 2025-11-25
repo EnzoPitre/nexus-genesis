@@ -35,7 +35,6 @@
             color: white;
             font-family: 'Inter', sans-serif;
             overflow-x: hidden;
-            /* Cursor: Auto pour garantir l'accessibilité */
         }
 
         h1, h2, h3, .brand-font { font-family: 'Rajdhani', sans-serif; }
@@ -102,7 +101,7 @@
         body.hovering #cursor { transform: scale(2.5); background: rgba(0, 243, 255, 0.1); border-color: var(--neon-cyan); }
 
         /* Override cursor for interactive elements */
-        a, button, input, textarea, .template-card, .hover-trigger { cursor: none !important; }
+        a, button, input, textarea, .template-card, .hover-trigger, label { cursor: none !important; }
 
         .cyber-input {
             background: rgba(0,0,0,0.4); border: 1px solid #333; color: white;
@@ -205,7 +204,7 @@
     <!-- === SECTION: HOME === -->
     <section id="view-home" class="active-section relative pb-20">
         <div class="min-h-screen flex flex-col justify-center items-center text-center relative z-10 pt-32 pb-20 container mx-auto px-6">
-            <div class="inline-block px-4 py-1 border border-cyan-500/30 rounded-full bg-cyan-500/5 text-cyan-400 text-xs mono mb-8 tracking-[0.3em]">SYSTEME V5.6 STABLE</div>
+            <div class="inline-block px-4 py-1 border border-cyan-500/30 rounded-full bg-cyan-500/5 text-cyan-400 text-xs mono mb-8 tracking-[0.3em]">SYSTEME V6.1 READY</div>
             <h1 class="text-6xl md:text-9xl font-black leading-tight mb-6 glitch" data-text="FORGEZ VOTRE">FORGEZ VOTRE<br><span class="text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 via-white to-purple-500">IDENTITÉ NUMÉRIQUE</span></h1>
             <p class="max-w-2xl text-gray-400 text-lg md:text-xl mb-12 leading-relaxed">Arrêtez d'envoyer des CVs PDF. Envoyez une expérience.<br>Trois architectures distinctes. Une seule identité : la vôtre.</p>
             <button onclick="document.getElementById('demo-preview').scrollIntoView({behavior:'smooth'})" class="btn-primary px-10 py-4 text-sm md:text-base group hover-trigger relative z-20">Choisir une Architecture</button>
@@ -359,12 +358,12 @@
                     <span class="text-xs mono text-gray-500 pl-2">MODE: <span id="mode-display" class="text-cyan-400 font-bold">ORION</span></span>
                     <div>
                         <button onclick="switchView('home')" class="text-[10px] border border-white/20 px-2 py-1 rounded hover:bg-white/10 transition-colors hover-trigger">CHANGER THÈME</button>
-                        <!-- ADDED RESET BUTTON HERE -->
                         <button onclick="resetMemory()" class="text-[10px] text-red-500 border border-red-500/30 px-2 py-1 rounded hover:bg-red-500/10 transition-colors hover-trigger ml-2">RESET MEMORY</button>
                     </div>
                 </div>
                 <div class="flex border-b border-white/10 bg-gray-900/50 overflow-x-auto">
                     <button onclick="setTab('profile')" class="tab-btn active-tab flex-1 py-4 text-xs mono uppercase text-center border-b-2 border-cyan-400 text-white hover:bg-white/5 min-w-[80px] hover-trigger">Profil</button>
+                    <button onclick="setTab('social')" class="tab-btn flex-1 py-4 text-xs mono uppercase text-center border-b-2 border-transparent text-gray-500 hover:text-white hover:bg-white/5 min-w-[80px] hover-trigger">Réseaux</button>
                     <button onclick="setTab('exp')" class="tab-btn flex-1 py-4 text-xs mono uppercase text-center border-b-2 border-transparent text-gray-500 hover:text-white hover:bg-white/5 min-w-[80px] hover-trigger">Exp.</button>
                     <button onclick="setTab('skills')" class="tab-btn flex-1 py-4 text-xs mono uppercase text-center border-b-2 border-transparent text-gray-500 hover:text-white hover:bg-white/5 min-w-[80px] hover-trigger">Skills</button>
                     <button onclick="setTab('passions')" class="tab-btn flex-1 py-4 text-xs mono uppercase text-center border-b-2 border-transparent text-gray-500 hover:text-white hover:bg-white/5 min-w-[80px] hover-trigger">Passions</button>
@@ -373,12 +372,20 @@
                     
                     <!-- Profile Tab -->
                     <div id="tab-profile" class="tab-content space-y-4">
-                        <div class="flex items-center gap-4 mb-4">
-                            <div class="relative">
-                                <canvas id="neural-avatar" width="64" height="64" class="rounded-full border-2 border-cyan-500/30 bg-black"></canvas>
-                                <div class="absolute -bottom-1 -right-1 w-3 h-3 bg-green-500 rounded-full border border-black"></div>
+                        <div class="flex items-center gap-4 mb-4 p-4 border border-white/10 rounded bg-white/5">
+                            <div class="relative group cursor-pointer hover-trigger">
+                                <canvas id="neural-avatar" width="64" height="64" class="rounded-full border-2 border-cyan-500/30 bg-black object-cover"></canvas>
+                                <img id="uploaded-avatar-preview" class="hidden absolute inset-0 w-full h-full rounded-full object-cover border-2 border-cyan-400">
+                                <div class="absolute inset-0 bg-black/50 flex items-center justify-center opacity-0 group-hover:opacity-100 rounded-full transition-opacity">
+                                    <i data-lucide="upload" class="w-4 h-4 text-white"></i>
+                                </div>
+                                <input type="file" id="input-avatar-file" class="absolute inset-0 opacity-0 cursor-pointer hover-trigger" accept="image/*" onchange="handleAvatarUpload(this)">
                             </div>
-                            <div class="text-xs text-gray-500">Avatar Neural<br><span class="text-cyan-400">Généré via Hash</span></div>
+                            <div class="flex-1">
+                                <div class="text-xs text-white font-bold mb-1">PHOTO DE PROFIL</div>
+                                <div class="text-[10px] text-gray-500 leading-tight">Cliquez sur le cercle pour uploader.<br>Sera encodée en Base64 (Holographic).</div>
+                                <button onclick="removeAvatar()" id="btn-remove-avatar" class="hidden text-[10px] text-red-500 mt-2 hover:underline hover-trigger">Supprimer la photo</button>
+                            </div>
                         </div>
 
                         <div class="space-y-1"><label class="text-xs text-gray-500 mono uppercase">Nom Complet</label><input type="text" id="input-name" class="w-full p-3 rounded cyber-input hover-trigger" value="ALEX STERLING" placeholder="Ex: Jean Dupont" oninput="updatePreview(); generateNeuralAvatar(this.value)"></div>
@@ -389,6 +396,15 @@
                         </div>
                         <div class="space-y-1"><label class="text-xs text-gray-500 mono uppercase">Email Contact</label><input type="text" id="input-email" class="w-full p-3 rounded cyber-input hover-trigger" value="hello@alexsterling.com" oninput="updatePreview()"></div>
                         <div class="space-y-1"><label class="text-xs text-gray-500 mono uppercase">Lien CV (PDF)</label><input type="text" id="input-cv" class="w-full p-3 rounded cyber-input hover-trigger" value="#" placeholder="mon-cv.pdf"></div>
+                    </div>
+
+                    <!-- Social Tab (NEW) -->
+                    <div id="tab-social" class="tab-content hidden space-y-4">
+                        <div class="p-3 bg-cyan-900/20 border border-cyan-500/30 rounded text-xs text-cyan-400 mb-4">
+                            <i data-lucide="share-2" class="inline w-3 h-3 mr-1"></i> Ajoutez vos liens (LinkedIn, GitHub, etc).
+                        </div>
+                        <div id="social-list" class="space-y-3"></div>
+                        <button onclick="addSocial()" class="w-full py-3 border border-dashed border-gray-700 text-gray-500 rounded hover:border-cyan-500 hover:text-cyan-400 transition-all text-xs uppercase mono tracking-widest hover-trigger">+ Ajouter un réseau</button>
                     </div>
                     
                     <!-- Exp Tab -->
@@ -405,9 +421,6 @@
 
                     <!-- Passions Tab -->
                     <div id="tab-passions" class="tab-content hidden space-y-4">
-                         <div class="p-3 bg-cyan-900/20 border border-cyan-500/30 rounded text-xs text-cyan-400 mb-4">
-                            <i data-lucide="info" class="inline w-3 h-3 mr-1"></i> Ces éléments apparaissent dans la section "Intérêts" ou "Passions" des templates.
-                        </div>
                         <div id="passions-list" class="space-y-3"></div>
                         <button onclick="addPassion()" class="w-full py-3 border border-dashed border-gray-700 text-gray-500 rounded hover:border-cyan-500 hover:text-cyan-400 transition-all text-xs uppercase mono tracking-widest hover-trigger">+ Ajouter une passion</button>
                     </div>
@@ -501,6 +514,7 @@
         let totalLines = 45800; 
         let audioEnabled = false;
         let audioContext = null;
+        let customAvatar = ""; // Base64 string for avatar
 
         // --- AUDIO ENGINE (SMOOTH ASMR STYLE) ---
         function initAudio() {
@@ -558,6 +572,9 @@
 
         // --- NEURAL AVATAR GENERATOR ---
         function generateNeuralAvatar(name) {
+            // Only generate if no custom avatar is set
+            if (customAvatar) return;
+
             const canvas = document.getElementById('neural-avatar');
             if(!canvas) return;
             const ctx = canvas.getContext('2d');
@@ -591,6 +608,39 @@
             ctx.closePath();
             ctx.fill();
         }
+
+        // --- AVATAR UPLOAD LOGIC ---
+        function handleAvatarUpload(input) {
+            if (input.files && input.files[0]) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    customAvatar = e.target.result;
+                    
+                    // Update UI
+                    const imgPreview = document.getElementById('uploaded-avatar-preview');
+                    imgPreview.src = customAvatar;
+                    imgPreview.classList.remove('hidden');
+                    document.getElementById('btn-remove-avatar').classList.remove('hidden');
+                    
+                    playClickSound();
+                    updatePreview();
+                }
+                reader.readAsDataURL(input.files[0]);
+            }
+        }
+
+        function removeAvatar() {
+            customAvatar = "";
+            document.getElementById('uploaded-avatar-preview').classList.add('hidden');
+            document.getElementById('btn-remove-avatar').classList.add('hidden');
+            document.getElementById('input-avatar-file').value = ""; // Clear input
+            
+            // Re-generate neural avatar
+            generateNeuralAvatar(document.getElementById('input-name').value);
+            playClickSound();
+            updatePreview();
+        }
+
 
         // --- CORE FUNCTIONS ---
         function switchView(viewName) {
@@ -655,6 +705,10 @@
             const passions = Array.from(passionElements).map(el => ({
                 name: el.querySelector('.passion-name').value, desc: el.querySelector('.passion-desc').value
             }));
+            const socialElements = document.querySelectorAll('.social-item');
+            const socials = Array.from(socialElements).map(el => ({
+                platform: el.querySelector('.social-platform').value, url: el.querySelector('.social-url').value
+            }));
 
             return {
                 name: document.getElementById('input-name').value || "NOM UTILISATEUR", 
@@ -662,7 +716,8 @@
                 bio: document.getElementById('input-bio').value || "Biographie...", 
                 email: document.getElementById('input-email').value || "email@test.com",
                 cv: document.getElementById('input-cv').value || "#", 
-                experiences, skills, passions
+                avatar: customAvatar,
+                experiences, skills, passions, socials
             };
         }
 
@@ -673,6 +728,18 @@
             if(parts.length === 1) return parts[0].substring(0, 2).toUpperCase();
             // First letter of first name + First letter of last name
             return (parts[0][0] + parts[parts.length - 1][0]).toUpperCase();
+        }
+
+        // --- HELPER: GET SOCIAL ICON ---
+        function getSocialIcon(platform) {
+            const p = platform.toLowerCase();
+            if(p.includes('linkedin')) return 'linkedin';
+            if(p.includes('github')) return 'github';
+            if(p.includes('twitter') || p.includes('x')) return 'twitter';
+            if(p.includes('instagram')) return 'instagram';
+            if(p.includes('behance')) return 'monitor'; // Lucide doesn't have behance standard, using generic
+            if(p.includes('dribbble')) return 'dribbble';
+            return 'link';
         }
 
         function getTemplateHTML(data) {
@@ -703,9 +770,18 @@
                     <div class="text-gray-400 text-sm">${p.desc}</div>
                 </div>
             `).join('');
+            
+            const socialHTML = data.socials.map(s => `
+                <a href="${s.url}" target="_blank" class="text-gray-500 hover:text-cyan-400 transition-colors"><i data-lucide="${getSocialIcon(s.platform)}" class="w-5 h-5"></i></a>
+            `).join('');
 
-            // UPDATE: Fixed "Analyser le parcours" link to use preventDefault
-            return `<!DOCTYPE html><html lang="fr"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>${data.name}</title><script src="https://cdn.tailwindcss.com"><\/script><script src="https://unpkg.com/lucide@latest"><\/script><link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;700;900&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet"><style>body{background-color:#030303;color:white;font-family:'Inter',sans-serif;overflow-x:hidden;}.aurora-bg{background:linear-gradient(-45deg,#000000,#0a192f,#000000,#0f2027);background-size:400% 400%;animation:aurora-shift 15s ease infinite;position:fixed;inset:0;z-index:-1;opacity:0.5;}@keyframes aurora-shift{0%{background-position:0% 50%;}50%{background-position:100% 50%;}100%{background-position:0% 50%;}}.scanlines{position:fixed;inset:0;z-index:2;pointer-events:none;background:linear-gradient(rgba(18,16,16,0) 50%,rgba(0,0,0,0.25) 50%);background-size:100% 4px;opacity:0.3;}.font-mono{font-family:'JetBrains Mono',monospace;}.glitch-text:hover{color:#06b6d4;text-shadow:2px 0 #fff,-2px 0 #06b6d4;transition:0.2s;}</style></head><body><div class="aurora-bg"></div><div class="scanlines"></div><header class="fixed w-full z-50 px-6 py-6 flex justify-between items-center mix-blend-difference text-white"><div class="font-bold text-xl tracking-tighter flex items-center gap-2 cursor-default"><div class="w-3 h-3 bg-cyan-500 rounded-full animate-pulse"></div>${getInitials(data.name)}.SYS</div><nav class="hidden md:flex gap-6 text-xs font-bold uppercase tracking-widest"><a href="#exp" class="hover:text-cyan-400 transition-colors">Parcours</a><a href="#contact" class="hover:text-cyan-400 transition-colors">Contact</a></nav></header><section class="min-h-screen w-full flex items-center justify-center px-6 relative pt-20"><div class="max-w-5xl w-full grid md:grid-cols-12 gap-12 items-center"><div class="md:col-span-8"><div class="flex items-center gap-4 mb-6"><div class="h-[1px] w-12 bg-cyan-400 shadow-[0_0_10px_#06b6d4]"></div><span class="text-cyan-400 tracking-[0.5em] text-xs uppercase font-bold">Dossier Confidentiel</span></div><h1 class="text-6xl md:text-8xl font-black text-white leading-[0.9] mb-6 glitch-text cursor-default">${data.name.toUpperCase()}</h1><h2 class="text-xl md:text-3xl font-light text-gray-300 mt-2 font-mono">${data.role.toUpperCase()} <span class="text-cyan-500 animate-blink">_</span></h2><p class="max-w-xl mt-8 text-gray-400 leading-relaxed text-lg">${data.bio}</p><div class="mt-12 flex flex-wrap gap-6"><a href="#exp" onclick="event.preventDefault(); document.getElementById('exp').scrollIntoView({behavior:'smooth'})" class="px-8 py-4 bg-white text-black font-bold uppercase tracking-widest hover:bg-cyan-400 transition-colors text-xs cursor-pointer">Analyser le parcours</a><a href="${data.cv}" class="px-8 py-4 border border-white/20 text-white font-bold uppercase tracking-widest hover:bg-white/10 transition-colors text-xs flex items-center gap-2"><i data-lucide="download" class="w-4 h-4"></i> Télécharger CV</a></div></div></div></section><section id="exp" class="py-32 bg-black/50 backdrop-blur-sm border-t border-white/5 relative"><div class="container mx-auto px-6 grid lg:grid-cols-12 gap-16 relative z-10"><div class="lg:col-span-7"><h3 class="text-3xl font-black mb-16 uppercase text-white tracking-wider flex items-center gap-4"><i data-lucide="activity" class="text-cyan-400"></i> Historique Opérationnel</h3><div class="space-y-4">${experiencesHTML}</div></div><div class="lg:col-span-5"><div class="bg-white/5 border border-white/10 p-8 rounded-2xl sticky top-10"><h3 class="text-xl font-black mb-8 uppercase text-white tracking-wider flex items-center gap-4"><i data-lucide="cpu" class="text-cyan-400"></i> Arsenal Technique</h3><div class="space-y-2">${skillsHTML}</div><h3 class="text-xl font-black mt-12 mb-6 uppercase text-white tracking-wider flex items-center gap-4"><i data-lucide="heart" class="text-cyan-400"></i> Intérêts</h3><div class="grid grid-cols-1 gap-2">${passionsHTML}</div></div></div></div></section><section id="contact" class="py-24 bg-black border-t border-white/10"><div class="container mx-auto px-6 max-w-4xl text-center"><h2 class="text-4xl font-bold mb-8">INITIALISER LA CONNEXION</h2><form class="space-y-4 max-w-lg mx-auto" onsubmit="event.preventDefault(); window.location.href='mailto:${data.email}?subject=Contact&body='+document.getElementById('msg').value"><input type="email" placeholder="Votre Email" class="w-full bg-white/5 border border-white/10 p-4 text-white focus:border-cyan-500 outline-none"><textarea id="msg" rows="4" placeholder="Message crypté..." class="w-full bg-white/5 border border-white/10 p-4 text-white focus:border-cyan-500 outline-none"></textarea><button class="w-full bg-cyan-500 text-black font-bold uppercase py-4 hover:bg-cyan-400 transition-colors">Transmettre</button></form></div></section><footer class="py-12 text-center border-t border-white/10 text-gray-600 font-mono text-xs uppercase">Architecture by Nexus Genesis // User: ${data.name}</footer><script>lucide.createIcons()<\/script></body></html>`;
+            // IMAGE LOGIC FOR ORION
+            let imageHTML = '';
+            if (data.avatar) {
+                imageHTML = `<div class="md:col-span-4 flex justify-center md:justify-end mb-8 md:mb-0"><div class="relative w-64 h-64 rounded-full overflow-hidden border-2 border-cyan-500/50 shadow-[0_0_30px_rgba(0,243,255,0.2)]"><img src="${data.avatar}" class="w-full h-full object-cover filter grayscale hover:grayscale-0 transition-all duration-500"></div></div>`;
+            }
+
+            return `<!DOCTYPE html><html lang="fr"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>${data.name}</title><script src="https://cdn.tailwindcss.com"><\/script><script src="https://unpkg.com/lucide@latest"><\/script><link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;700;900&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet"><style>body{background-color:#030303;color:white;font-family:'Inter',sans-serif;overflow-x:hidden;}.aurora-bg{background:linear-gradient(-45deg,#000000,#0a192f,#000000,#0f2027);background-size:400% 400%;animation:aurora-shift 15s ease infinite;position:fixed;inset:0;z-index:-1;opacity:0.5;}@keyframes aurora-shift{0%{background-position:0% 50%;}50%{background-position:100% 50%;}100%{background-position:0% 50%;}}.scanlines{position:fixed;inset:0;z-index:2;pointer-events:none;background:linear-gradient(rgba(18,16,16,0) 50%,rgba(0,0,0,0.25) 50%);background-size:100% 4px;opacity:0.3;}.font-mono{font-family:'JetBrains Mono',monospace;}.glitch-text:hover{color:#06b6d4;text-shadow:2px 0 #fff,-2px 0 #06b6d4;transition:0.2s;}</style></head><body><div class="aurora-bg"></div><div class="scanlines"></div><header class="fixed w-full z-50 px-6 py-6 flex justify-between items-center mix-blend-difference text-white"><div class="font-bold text-xl tracking-tighter flex items-center gap-2 cursor-default"><div class="w-3 h-3 bg-cyan-500 rounded-full animate-pulse"></div>${getInitials(data.name)}.SYS</div><nav class="hidden md:flex gap-6 text-xs font-bold uppercase tracking-widest"><a href="#exp" class="hover:text-cyan-400 transition-colors">Parcours</a><a href="#contact" class="hover:text-cyan-400 transition-colors">Contact</a></nav></header><section class="min-h-screen w-full flex items-center justify-center px-6 relative pt-20"><div class="max-w-6xl w-full grid md:grid-cols-12 gap-12 items-center"><div class="${data.avatar ? 'md:col-span-8' : 'md:col-span-12'}"><div class="flex items-center gap-4 mb-6"><div class="h-[1px] w-12 bg-cyan-400 shadow-[0_0_10px_#06b6d4]"></div><span class="text-cyan-400 tracking-[0.5em] text-xs uppercase font-bold">Dossier Confidentiel</span></div><h1 class="text-6xl md:text-8xl font-black text-white leading-[0.9] mb-6 glitch-text cursor-default">${data.name.toUpperCase()}</h1><h2 class="text-xl md:text-3xl font-light text-gray-300 mt-2 font-mono">${data.role.toUpperCase()} <span class="text-cyan-500 animate-blink">_</span></h2><p class="max-w-xl mt-8 text-gray-400 leading-relaxed text-lg">${data.bio}</p><div class="mt-8 flex gap-4">${socialHTML}</div><div class="mt-12 flex flex-wrap gap-6"><a href="#exp" onclick="event.preventDefault(); document.getElementById('exp').scrollIntoView({behavior:'smooth'})" class="px-8 py-4 bg-white text-black font-bold uppercase tracking-widest hover:bg-cyan-400 transition-colors text-xs cursor-pointer">Analyser le parcours</a><a href="${data.cv}" class="px-8 py-4 border border-white/20 text-white font-bold uppercase tracking-widest hover:bg-white/10 transition-colors text-xs flex items-center gap-2"><i data-lucide="download" class="w-4 h-4"></i> Télécharger CV</a></div></div>${imageHTML}</div></section><section id="exp" class="py-32 bg-black/50 backdrop-blur-sm border-t border-white/5 relative"><div class="container mx-auto px-6 grid lg:grid-cols-12 gap-16 relative z-10"><div class="lg:col-span-7"><h3 class="text-3xl font-black mb-16 uppercase text-white tracking-wider flex items-center gap-4"><i data-lucide="activity" class="text-cyan-400"></i> Historique Opérationnel</h3><div class="space-y-4">${experiencesHTML}</div></div><div class="lg:col-span-5"><div class="bg-white/5 border border-white/10 p-8 rounded-2xl sticky top-10"><h3 class="text-xl font-black mb-8 uppercase text-white tracking-wider flex items-center gap-4"><i data-lucide="cpu" class="text-cyan-400"></i> Arsenal Technique</h3><div class="space-y-2">${skillsHTML}</div><h3 class="text-xl font-black mt-12 mb-6 uppercase text-white tracking-wider flex items-center gap-4"><i data-lucide="heart" class="text-cyan-400"></i> Intérêts</h3><div class="grid grid-cols-1 gap-2">${passionsHTML}</div></div></div></div></section><section id="contact" class="py-24 bg-black border-t border-white/10"><div class="container mx-auto px-6 max-w-4xl text-center"><h2 class="text-4xl font-bold mb-8">INITIALISER LA CONNEXION</h2><form class="space-y-4 max-w-lg mx-auto" onsubmit="event.preventDefault(); window.location.href='mailto:${data.email}?subject=Contact&body='+document.getElementById('msg').value"><input type="email" placeholder="Votre Email" class="w-full bg-white/5 border border-white/10 p-4 text-white focus:border-cyan-500 outline-none"><textarea id="msg" rows="4" placeholder="Message crypté..." class="w-full bg-white/5 border border-white/10 p-4 text-white focus:border-cyan-500 outline-none"></textarea><button class="w-full bg-cyan-500 text-black font-bold uppercase py-4 hover:bg-cyan-400 transition-colors">Transmettre</button></form></div></section><footer class="py-12 text-center border-t border-white/10 text-gray-600 font-mono text-xs uppercase">Architecture by Nexus Genesis // User: ${data.name}</footer><script>lucide.createIcons()<\/script></body></html>`;
         }
 
         // --- NOVA TEMPLATE ---
@@ -732,8 +808,17 @@
                 </div>
             `).join('');
 
-            // UPDATE: Added CV Button, Fixed Bio/Role Visibility, Fixed Animation Glitch
-            return `<!DOCTYPE html><html lang="fr"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>${data.name} // NOVA</title><script src="https://cdn.tailwindcss.com"><\/script><script src="https://unpkg.com/lucide@latest"><\/script><script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"><\/script><script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"><\/script><link href="https://fonts.googleapis.com/css2?family=Anton&family=Space+Mono:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet"><style>:root{--ink:#101010;--paper:#e6e6e6;--alert:#ff3300;}::selection{background:var(--ink);color:var(--alert);}body{background-color:var(--paper);color:var(--ink);font-family:'Space Mono',monospace;cursor:auto;overflow-x:hidden;}h1,h2,h3,.mega-type{font-family:'Anton',sans-serif;letter-spacing:-0.02em;}#cursor-ball{width:20px;height:20px;background:var(--alert);border-radius:50%;position:fixed;top:0;left:0;z-index:9999;pointer-events:none;mix-blend-mode:difference;transition:transform 0.1s;}.marquee-container{overflow:hidden;white-space:nowrap;position:relative;}.marquee-content{display:inline-block;animation:marquee 15s linear infinite;}@keyframes marquee{0%{transform:translateX(0);}100%{transform:translateX(-50%);}}.noise-overlay{position:fixed;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:999;opacity:0.05;background:url('//grainy-gradients.vercel.app/noise.svg');}.reveal-text{clip-path:polygon(0 0,100% 0,100% 100%,0 100%);transform:translateY(0);opacity:1; /* Visible par defaut pour eviter bugs */}.magnetic-btn:hover{background:var(--ink);color:var(--paper);}.exp-card{opacity:1 !important; visibility:visible !important;}</style></head><body class="antialiased"><div class="noise-overlay"></div><div id="cursor-ball"></div><nav class="fixed top-0 w-full z-50 flex justify-between items-center px-6 py-6 mix-blend-difference text-white md:mix-blend-normal md:text-black"><div class="text-xl font-bold tracking-tighter">${getInitials(data.name)}.<span class="text-[#ff3300]">SYS</span></div><div class="flex gap-4"><a href="${data.cv}" class="magnetic-btn border-2 border-current px-6 py-2 font-bold uppercase hover:bg-black hover:text-[#ff3300] hover:border-black transition-all rounded-full flex items-center gap-2">CV.PDF <i data-lucide="download" class="w-4 h-4"></i></a><a href="#contact" class="magnetic-btn border-2 border-current px-6 py-2 font-bold uppercase hover:bg-black hover:text-[#ff3300] hover:border-black transition-all rounded-full">Contact</a></div></nav><section class="min-h-screen flex flex-col justify-center px-4 md:px-12 pt-20 relative border-b-4 border-black bg-[#e6e6e6]"><div class="flex flex-col z-10 mix-blend-darken"><h1 class="text-[15vw] leading-[0.85] uppercase break-all reveal-text" style="color:transparent;-webkit-text-stroke:2px var(--ink);">${data.name.split(' ')[0]}</h1><h1 class="text-[15vw] leading-[0.85] uppercase text-black reveal-text ml-[10vw]">${data.name.split(' ')[1] || 'PORTFOLIO'}</h1></div><div class="mt-12 md:absolute md:bottom-12 md:right-12 max-w-md text-right self-end reveal-text"><p class="text-3xl md:text-4xl font-bold leading-tight uppercase border-l-4 border-[#ff3300] pl-4 bg-white/50 backdrop-blur-sm p-4 text-black shadow-lg transform -rotate-1">${data.role}</p></div></section><div class="bg-[#ff3300] text-black py-4 border-b-4 border-black overflow-hidden rotate-[-2deg] scale-105 z-20 relative shadow-xl"><div class="marquee-container"><div class="marquee-content text-4xl font-black uppercase font-sans">CREATIVE // DEVELOPMENT // DESIGN // STRATEGY // BRUTALISM // WEBGL // INTERACTIVE // CREATIVE // DEVELOPMENT // DESIGN // STRATEGY // BRUTALISM // WEBGL // INTERACTIVE //</div></div></div><section class="py-32 px-4 md:px-12 bg-[#101010] text-[#e6e6e6] relative"><div class="grid md:grid-cols-2 gap-16"><div><span class="text-[#ff3300] font-bold text-sm mb-4 block">01 // IDENTITY</span><p class="text-3xl md:text-5xl font-bold leading-snug reveal-text">${data.bio}</p></div></div></section><section id="exp" class="py-32 px-4 md:px-12 bg-[#e6e6e6] relative"><div class="flex items-end justify-between mb-16 border-b-4 border-black pb-4"><h2 class="text-[10vw] leading-none text-black">WORK.</h2><span class="text-xl font-bold text-[#ff3300]">HISTORY</span></div><div class="flex flex-col">${experiencesHTML}</div></section><section class="py-32 px-4 md:px-12 bg-white border-t-4 border-black relative"><div class="grid md:grid-cols-2 gap-12"><div><h2 class="text-6xl font-black mb-12 uppercase">Tech<span class="text-transparent" style="-webkit-text-stroke:2px black;">Stack</span></h2><div class="flex flex-wrap gap-2">${skillsHTML}</div></div><div><h2 class="text-6xl font-black mb-12 uppercase text-[#ff3300]">Passions</h2><div class="space-y-4">${passionsHTML}</div></div></div></section><section id="contact" class="py-24 px-4 md:px-12 bg-[#101010] text-white flex flex-col md:flex-row gap-12 items-center"><div class="flex-1"><h2 class="text-[8vw] leading-none uppercase font-black text-[#ff3300]">LET'S TALK</h2><p class="text-xl mt-4 max-w-md">Prêt à démarrer un nouveau projet ? Envoyez un signal.</p></div><form class="flex-1 w-full space-y-4" onsubmit="event.preventDefault(); window.location.href='mailto:${data.email}?subject=Nova Contact&body='+document.getElementById('nova-msg').value"><input type="email" placeholder="E-mail" class="w-full bg-transparent border-b-2 border-white/20 py-4 text-2xl focus:border-[#ff3300] outline-none"><textarea id="nova-msg" rows="2" placeholder="Brief..." class="w-full bg-transparent border-b-2 border-white/20 py-4 text-2xl focus:border-[#ff3300] outline-none"></textarea><button class="bg-[#ff3300] text-black font-bold uppercase px-8 py-4 text-xl hover:bg-white transition-colors w-full md:w-auto">Envoyer</button></form></section><footer class="bg-black text-[#ff3300] py-12 text-center text-xs font-mono uppercase">© ${new Date().getFullYear()} NOVA SYSTEM // GENERATED BY NEXUS GENESIS</footer><script>lucide.createIcons();const cursor=document.getElementById('cursor-ball');window.addEventListener('mousemove',(e)=>{gsap.to(cursor,{x:e.clientX-10,y:e.clientY-10,duration:0.1,ease:"power2.out"});});gsap.registerPlugin(ScrollTrigger);const reveals=document.querySelectorAll('.reveal-text');reveals.forEach(el=>{gsap.from(el,{scrollTrigger:{trigger:el,start:"top 85%"},y:100,opacity:0,duration:1,ease:"expo.out"});});<\/script></body></html>`;
+            const socialHTML = data.socials.map(s => `
+                <a href="${s.url}" target="_blank" class="border border-black px-4 py-2 rounded-full hover:bg-black hover:text-[#ff3300] transition-colors flex items-center gap-2 font-bold uppercase text-xs"><i data-lucide="${getSocialIcon(s.platform)}" class="w-4 h-4"></i> ${s.platform}</a>
+            `).join('');
+
+            // IMAGE LOGIC FOR NOVA (BRUTALIST)
+            let imageHTML = '';
+            if (data.avatar) {
+                imageHTML = `<div class="md:col-span-1"><div class="w-full aspect-square bg-black p-2"><img src="${data.avatar}" class="w-full h-full object-cover grayscale contrast-125 hover:filter-none transition-all"></div></div>`;
+            }
+
+            return `<!DOCTYPE html><html lang="fr"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>${data.name} // NOVA</title><script src="https://cdn.tailwindcss.com"><\/script><script src="https://unpkg.com/lucide@latest"><\/script><script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"><\/script><script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"><\/script><link href="https://fonts.googleapis.com/css2?family=Anton&family=Space+Mono:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet"><style>:root{--ink:#101010;--paper:#e6e6e6;--alert:#ff3300;}::selection{background:var(--ink);color:var(--alert);}body{background-color:var(--paper);color:var(--ink);font-family:'Space Mono',monospace;cursor:auto;overflow-x:hidden;}h1,h2,h3,.mega-type{font-family:'Anton',sans-serif;letter-spacing:-0.02em;}#cursor-ball{width:20px;height:20px;background:var(--alert);border-radius:50%;position:fixed;top:0;left:0;z-index:9999;pointer-events:none;mix-blend-mode:difference;transition:transform 0.1s;}.marquee-container{overflow:hidden;white-space:nowrap;position:relative;}.marquee-content{display:inline-block;animation:marquee 15s linear infinite;}@keyframes marquee{0%{transform:translateX(0);}100%{transform:translateX(-50%);}}.noise-overlay{position:fixed;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:999;opacity:0.05;background:url('//grainy-gradients.vercel.app/noise.svg');}.reveal-text{clip-path:polygon(0 0,100% 0,100% 100%,0 100%);transform:translateY(0);opacity:1; /* Visible par defaut pour eviter bugs */}.magnetic-btn:hover{background:var(--ink);color:var(--paper);}.exp-card{opacity:1 !important; visibility:visible !important;}</style></head><body class="antialiased"><div class="noise-overlay"></div><div id="cursor-ball"></div><nav class="fixed top-0 w-full z-50 flex justify-between items-center px-6 py-6 mix-blend-difference text-white md:mix-blend-normal md:text-black"><div class="text-xl font-bold tracking-tighter">${getInitials(data.name)}.<span class="text-[#ff3300]">SYS</span></div><div class="flex gap-4"><a href="${data.cv}" class="magnetic-btn border-2 border-current px-6 py-2 font-bold uppercase hover:bg-black hover:text-[#ff3300] hover:border-black transition-all rounded-full flex items-center gap-2">CV.PDF <i data-lucide="download" class="w-4 h-4"></i></a><a href="#contact" class="magnetic-btn border-2 border-current px-6 py-2 font-bold uppercase hover:bg-black hover:text-[#ff3300] hover:border-black transition-all rounded-full">Contact</a></div></nav><section class="min-h-screen flex flex-col justify-center px-4 md:px-12 pt-20 relative border-b-4 border-black bg-[#e6e6e6]"><div class="flex flex-col z-10 mix-blend-darken"><h1 class="text-[15vw] leading-[0.85] uppercase break-all reveal-text" style="color:transparent;-webkit-text-stroke:2px var(--ink);">${data.name.split(' ')[0]}</h1><h1 class="text-[15vw] leading-[0.85] uppercase text-black reveal-text ml-[10vw]">${data.name.split(' ')[1] || 'PORTFOLIO'}</h1></div><div class="mt-12 md:absolute md:bottom-12 md:right-12 max-w-md text-right self-end reveal-text"><p class="text-3xl md:text-4xl font-bold leading-tight uppercase border-l-4 border-[#ff3300] pl-4 bg-white/50 backdrop-blur-sm p-4 text-black shadow-lg transform -rotate-1">${data.role}</p></div></section><div class="bg-[#ff3300] text-black py-4 border-b-4 border-black overflow-hidden rotate-[-2deg] scale-105 z-20 relative shadow-xl"><div class="marquee-container"><div class="marquee-content text-4xl font-black uppercase font-sans">CREATIVE // DEVELOPMENT // DESIGN // STRATEGY // BRUTALISM // WEBGL // INTERACTIVE // CREATIVE // DEVELOPMENT // DESIGN // STRATEGY // BRUTALISM // WEBGL // INTERACTIVE //</div></div></div><section class="py-32 px-4 md:px-12 bg-[#101010] text-[#e6e6e6] relative"><div class="grid md:grid-cols-2 gap-16 items-center">${data.avatar ? imageHTML : ''}<div><span class="text-[#ff3300] font-bold text-sm mb-4 block">01 // IDENTITY</span><p class="text-3xl md:text-5xl font-bold leading-snug reveal-text">${data.bio}</p><div class="flex flex-wrap gap-3 mt-8">${socialHTML}</div></div></div></section><section id="exp" class="py-32 px-4 md:px-12 bg-[#e6e6e6] relative"><div class="flex items-end justify-between mb-16 border-b-4 border-black pb-4"><h2 class="text-[10vw] leading-none text-black">WORK.</h2><span class="text-xl font-bold text-[#ff3300]">HISTORY</span></div><div class="flex flex-col">${experiencesHTML}</div></section><section class="py-32 px-4 md:px-12 bg-white border-t-4 border-black relative"><div class="grid md:grid-cols-2 gap-12"><div><h2 class="text-6xl font-black mb-12 uppercase">Tech<span class="text-transparent" style="-webkit-text-stroke:2px black;">Stack</span></h2><div class="flex flex-wrap gap-2">${skillsHTML}</div></div><div><h2 class="text-6xl font-black mb-12 uppercase text-[#ff3300]">Passions</h2><div class="space-y-4">${passionsHTML}</div></div></div></section><section id="contact" class="py-24 px-4 md:px-12 bg-[#101010] text-white flex flex-col md:flex-row gap-12 items-center"><div class="flex-1"><h2 class="text-[8vw] leading-none uppercase font-black text-[#ff3300]">LET'S TALK</h2><p class="text-xl mt-4 max-w-md">Prêt à démarrer un nouveau projet ? Envoyez un signal.</p></div><form class="flex-1 w-full space-y-4" onsubmit="event.preventDefault(); window.location.href='mailto:${data.email}?subject=Nova Contact&body='+document.getElementById('nova-msg').value"><input type="email" placeholder="E-mail" class="w-full bg-transparent border-b-2 border-white/20 py-4 text-2xl focus:border-[#ff3300] outline-none"><textarea id="nova-msg" rows="2" placeholder="Brief..." class="w-full bg-transparent border-b-2 border-white/20 py-4 text-2xl focus:border-[#ff3300] outline-none"></textarea><button class="bg-[#ff3300] text-black font-bold uppercase px-8 py-4 text-xl hover:bg-white transition-colors w-full md:w-auto">Envoyer</button></form></section><footer class="bg-black text-[#ff3300] py-12 text-center text-xs font-mono uppercase">© ${new Date().getFullYear()} NOVA SYSTEM // GENERATED BY NEXUS GENESIS</footer><script>lucide.createIcons();const cursor=document.getElementById('cursor-ball');window.addEventListener('mousemove',(e)=>{gsap.to(cursor,{x:e.clientX-10,y:e.clientY-10,duration:0.1,ease:"power2.out"});});gsap.registerPlugin(ScrollTrigger);const reveals=document.querySelectorAll('.reveal-text');reveals.forEach(el=>{gsap.from(el,{scrollTrigger:{trigger:el,start:"top 85%"},y:100,opacity:0,duration:1,ease:"expo.out"});});<\/script></body></html>`;
         }
 
         // --- VANGUARD TEMPLATE ---
@@ -755,10 +840,18 @@
                     <p class="text-gray-500 group-hover:text-black group-hover:translate-x-4 transition-transform delay-75">${p.desc}</p>
                 </div>
             `).join('');
+            
+            const socialHTML = data.socials.map(s => `
+                <a href="${s.url}" target="_blank" class="text-lg font-bold uppercase border-b border-black pb-1 hover:text-[#ccff00] transition-colors">${s.platform}</a>
+            `).join('');
 
-            // UPDATE: Fixed "EXPLORER" button to scroll to #work without reloading
-            // UPDATE: Initials in header
-            return `<!DOCTYPE html><html lang="fr"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>${data.name} - Vanguard</title><script src="https://cdn.tailwindcss.com"><\/script><script src="https://unpkg.com/lucide@latest"><\/script><link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;700&family=Syne:wght@400;700;800&display=swap" rel="stylesheet"><script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"><\/script><script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"><\/script><style>:root{--bg-color:#f2f2f0;--text-color:#111111;--accent-color:#ccff00;}body{background-color:var(--bg-color);color:var(--text-color);font-family:'Space Grotesk',sans-serif;overflow-x:hidden;cursor:auto;margin:0;padding:0;}h1,h2,h3,h4,.font-display{font-family:'Syne',sans-serif;}#cursor-dot,#cursor-outline{position:fixed;top:0;left:0;transform:translate(-50%,-50%);border-radius:50%;z-index:9999;pointer-events:none;mix-blend-mode:difference;}#cursor-dot{width:12px;height:12px;background-color:white;}#cursor-outline{width:60px;height:60px;border:1px solid white;background-color:rgba(255,255,255,0.1);transition:width 0.2s,height 0.2s;}body.hover-active #cursor-outline{width:100px;height:100px;background-color:white;}.huge-text{font-size:clamp(3rem,12vw,12rem);line-height:0.85;letter-spacing:-0.04em;font-weight:800;text-transform:uppercase;}.contact-text{font-size:clamp(3rem,10vw,8rem);line-height:0.9;}.skill-tag{border:1px solid var(--text-color);padding:10px 20px;border-radius:50px;transition:all 0.3s ease;background:transparent;display:inline-block;margin:5px;}.skill-tag:hover{background:var(--text-color);color:var(--accent-color);transform:translateY(-5px);}.nav-link:hover{text-decoration:underline;}</style></head><body class="antialiased"><div id="cursor-dot"></div><div id="cursor-outline"></div><nav class="fixed top-0 left-0 w-full p-6 flex justify-between items-center z-50 mix-blend-exclusion text-white md:text-black md:mix-blend-normal"><div class="text-xl font-bold font-display tracking-tighter">${getInitials(data.name)}.25 ©</div><div class="hidden md:flex gap-8 text-sm uppercase font-bold tracking-widest"><a href="#hero" class="nav-link text-black hover-trigger">Profil</a><a href="#work" class="nav-link text-black hover-trigger">Projets</a><a href="#skills" class="nav-link text-black hover-trigger">Arsenal</a><a href="#contact" class="px-6 py-2 bg-black text-[#ccff00] rounded-full hover:bg-[#ccff00] hover:text-black transition-colors hover-trigger">Contact</a></div></nav><main><section id="hero" class="min-h-screen flex flex-col justify-center px-4 md:px-12 pt-20 relative overflow-hidden"><div class="absolute top-1/4 right-0 w-[40vw] h-[40vw] bg-[#ccff00] rounded-full blur-[100px] opacity-20 animate-pulse"></div><div class="relative z-10"><p class="text-sm md:text-lg uppercase tracking-widest mb-4 border-l-2 border-black pl-4 font-bold">Portfolio 2025</p><h1 class="huge-text leading-[0.8]"><div><span class="block">${data.name.split(' ')[0]}</span></div><div><span class="block ml-[10vw] text-[#ccff00] drop-shadow-lg" style="-webkit-text-stroke: 2px black;">${data.name.split(' ')[1] || 'PORTFOLIO'}</span></div></h1></div><div class="mt-12 md:mt-24 grid grid-cols-1 md:grid-cols-12 gap-8 items-start"><div class="md:col-span-4 md:col-start-9"><p class="text-lg md:text-xl font-medium leading-relaxed">${data.role}<br><br>${data.bio}</p><div class="mt-8 flex gap-4"><a href="#work" onclick="event.preventDefault(); document.getElementById('work').scrollIntoView({behavior:'smooth'})" class="group flex items-center gap-2 border-b-2 border-black pb-1 hover-trigger cursor-pointer"><span>EXPLORER</span><i data-lucide="arrow-down-right"></i></a><a href="${data.cv}" class="group flex items-center gap-2 border-b-2 border-transparent hover:border-black pb-1 text-gray-500 hover:text-black transition-all hover-trigger"><span>CV.PDF</span><i data-lucide="download"></i></a></div></div></div></section><section id="work" class="py-24 px-4 md:px-12 bg-black text-[#f2f2f0] rounded-t-[3rem] relative z-20"><div class="flex flex-col md:flex-row justify-between items-end mb-24 border-b border-white/20 pb-8"><h2 class="text-6xl md:text-8xl font-display font-bold uppercase">Work<br><span class="text-[#ccff00]">History</span></h2></div><div class="space-y-0">${experiencesHTML}</div></section><section id="skills" class="py-24 px-4 md:px-12"><div class="grid grid-cols-1 lg:grid-cols-2 gap-20"><div><h2 class="text-5xl font-display font-bold mb-12">ARSENAL</h2><div class="flex flex-wrap gap-4">${skillsHTML}</div></div><div><h2 class="text-5xl font-display font-bold mb-12">PASSIONS</h2><div class="flex flex-col">${passionsHTML}</div></div></div></section><section id="contact" class="min-h-screen px-4 md:px-12 py-24 bg-[#ccff00] text-black relative flex flex-col justify-between"><div class="grid grid-cols-1 md:grid-cols-2 gap-16 md:gap-24 items-start"><div><h2 class="contact-text font-display font-black tracking-tighter mb-8 leading-none">LET'S<br>TALK.</h2><div class="space-y-4 text-xl font-medium mt-12"><a href="mailto:${data.email}" class="block border-b border-black pb-2 hover:pl-4 transition-all hover-trigger">${data.email}</a></div></div><form class="space-y-8 mt-12 md:mt-4" onsubmit="event.preventDefault(); window.location.href='mailto:${data.email}?subject=Contact Portfolio&body='+this.querySelector('#form-msg').value"><div class="group"><label class="block text-xs font-bold uppercase mb-2">Identité</label><input type="text" placeholder="Votre nom" class="w-full bg-transparent border-b-2 border-black py-4 placeholder-black/50 focus:outline-none focus:border-white transition-colors text-lg"></div><div class="group"><label class="block text-xs font-bold uppercase mb-2">Brief</label><textarea id="form-msg" rows="3" placeholder="Parlons projet..." class="w-full bg-transparent border-b-2 border-black py-4 placeholder-black/50 focus:outline-none focus:border-white transition-colors resize-none text-lg"></textarea></div><button type="submit" class="w-full bg-black text-white py-6 text-xl font-display font-bold uppercase hover:bg-white hover:text-black transition-colors hover-trigger mt-4">Envoyer le message</button></form></div><footer class="mt-24 pt-8 border-t border-black font-bold uppercase">© 2025 ${data.name.split(' ')[0]} // Vanguard Edition</footer></section></main><script>lucide.createIcons();const cursorDot=document.getElementById('cursor-dot');const cursorOutline=document.getElementById('cursor-outline');window.addEventListener('mousemove',(e)=>{const posX=e.clientX;const posY=e.clientY;cursorDot.style.left=\`\${posX}px\`;cursorDot.style.top=\`\${posY}px\`;cursorOutline.animate({left:\`\${posX}px\`,top:\`\${posY}px\`},{duration:500,fill:"forwards"});});const hoverTriggers=document.querySelectorAll('.hover-trigger, a, button, .work-item');hoverTriggers.forEach(trigger=>{trigger.addEventListener('mouseenter',()=>{document.body.classList.add('hover-active');});trigger.addEventListener('mouseleave',()=>{document.body.classList.remove('hover-active');});});<\/script></body></html>`;
+            // IMAGE LOGIC FOR VANGUARD
+            let imageHTML = '';
+            if (data.avatar) {
+                 imageHTML = `<div class="absolute top-20 right-10 md:top-1/4 md:right-20 w-48 h-48 md:w-80 md:h-80 rounded-full overflow-hidden mix-blend-difference animate-pulse"><img src="${data.avatar}" class="w-full h-full object-cover"></div>`;
+            }
+
+            return `<!DOCTYPE html><html lang="fr"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>${data.name} - Vanguard</title><script src="https://cdn.tailwindcss.com"><\/script><script src="https://unpkg.com/lucide@latest"><\/script><link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;700&family=Syne:wght@400;700;800&display=swap" rel="stylesheet"><script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"><\/script><script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"><\/script><style>:root{--bg-color:#f2f2f0;--text-color:#111111;--accent-color:#ccff00;}body{background-color:var(--bg-color);color:var(--text-color);font-family:'Space Grotesk',sans-serif;overflow-x:hidden;cursor:auto;margin:0;padding:0;}h1,h2,h3,h4,.font-display{font-family:'Syne',sans-serif;}#cursor-dot,#cursor-outline{position:fixed;top:0;left:0;transform:translate(-50%,-50%);border-radius:50%;z-index:9999;pointer-events:none;mix-blend-mode:difference;}#cursor-dot{width:12px;height:12px;background-color:white;}#cursor-outline{width:60px;height:60px;border:1px solid white;background-color:rgba(255,255,255,0.1);transition:width 0.2s,height 0.2s;}body.hover-active #cursor-outline{width:100px;height:100px;background-color:white;}.huge-text{font-size:clamp(3rem,12vw,12rem);line-height:0.85;letter-spacing:-0.04em;font-weight:800;text-transform:uppercase;}.contact-text{font-size:clamp(3rem,10vw,8rem);line-height:0.9;}.skill-tag{border:1px solid var(--text-color);padding:10px 20px;border-radius:50px;transition:all 0.3s ease;background:transparent;display:inline-block;margin:5px;}.skill-tag:hover{background:var(--text-color);color:var(--accent-color);transform:translateY(-5px);}.nav-link:hover{text-decoration:underline;}</style></head><body class="antialiased"><div id="cursor-dot"></div><div id="cursor-outline"></div><nav class="fixed top-0 left-0 w-full p-6 flex justify-between items-center z-50 mix-blend-exclusion text-white md:text-black md:mix-blend-normal"><div class="text-xl font-bold font-display tracking-tighter">${getInitials(data.name)}.25 ©</div><div class="hidden md:flex gap-8 text-sm uppercase font-bold tracking-widest"><a href="#hero" class="nav-link text-black hover-trigger">Profil</a><a href="#work" class="nav-link text-black hover-trigger">Projets</a><a href="#skills" class="nav-link text-black hover-trigger">Arsenal</a><a href="#contact" class="px-6 py-2 bg-black text-[#ccff00] rounded-full hover:bg-[#ccff00] hover:text-black transition-colors hover-trigger">Contact</a></div></nav><main><section id="hero" class="min-h-screen flex flex-col justify-center px-4 md:px-12 pt-20 relative overflow-hidden">${imageHTML}<div class="relative z-10"><p class="text-sm md:text-lg uppercase tracking-widest mb-4 border-l-2 border-black pl-4 font-bold">Portfolio 2025</p><h1 class="huge-text leading-[0.8]"><div><span class="block">${data.name.split(' ')[0]}</span></div><div><span class="block ml-[10vw] text-[#ccff00] drop-shadow-lg" style="-webkit-text-stroke: 2px black;">${data.name.split(' ')[1] || 'PORTFOLIO'}</span></div></h1></div><div class="mt-12 md:mt-24 grid grid-cols-1 md:grid-cols-12 gap-8 items-start"><div class="md:col-span-4 md:col-start-9"><p class="text-lg md:text-xl font-medium leading-relaxed">${data.role}<br><br>${data.bio}</p><div class="mt-8 flex gap-4"><a href="#work" onclick="event.preventDefault(); document.getElementById('work').scrollIntoView({behavior:'smooth'})" class="group flex items-center gap-2 border-b-2 border-black pb-1 hover-trigger cursor-pointer"><span>EXPLORER</span><i data-lucide="arrow-down-right"></i></a><a href="${data.cv}" class="group flex items-center gap-2 border-b-2 border-transparent hover:border-black pb-1 text-gray-500 hover:text-black transition-all hover-trigger"><span>CV.PDF</span><i data-lucide="download"></i></a></div></div></div></section><section id="work" class="py-24 px-4 md:px-12 bg-black text-[#f2f2f0] rounded-t-[3rem] relative z-20"><div class="flex flex-col md:flex-row justify-between items-end mb-24 border-b border-white/20 pb-8"><h2 class="text-6xl md:text-8xl font-display font-bold uppercase">Work<br><span class="text-[#ccff00]">History</span></h2></div><div class="space-y-0">${experiencesHTML}</div></section><section id="skills" class="py-24 px-4 md:px-12"><div class="grid grid-cols-1 lg:grid-cols-2 gap-20"><div><h2 class="text-5xl font-display font-bold mb-12">ARSENAL</h2><div class="flex flex-wrap gap-4">${skillsHTML}</div></div><div><h2 class="text-5xl font-display font-bold mb-12">PASSIONS</h2><div class="flex flex-col">${passionsHTML}</div></div></div></section><section id="contact" class="min-h-screen px-4 md:px-12 py-24 bg-[#ccff00] text-black relative flex flex-col justify-between"><div class="grid grid-cols-1 md:grid-cols-2 gap-16 md:gap-24 items-start"><div><h2 class="contact-text font-display font-black tracking-tighter mb-8 leading-none">LET'S<br>TALK.</h2><div class="space-y-4 text-xl font-medium mt-12"><a href="mailto:${data.email}" class="block border-b border-black pb-2 hover:pl-4 transition-all hover-trigger">${data.email}</a><div class="mt-8 flex gap-6">${socialHTML}</div></div></div><form class="space-y-8 mt-12 md:mt-4" onsubmit="event.preventDefault(); window.location.href='mailto:${data.email}?subject=Contact Portfolio&body='+this.querySelector('#form-msg').value"><div class="group"><label class="block text-xs font-bold uppercase mb-2">Identité</label><input type="text" placeholder="Votre nom" class="w-full bg-transparent border-b-2 border-black py-4 placeholder-black/50 focus:outline-none focus:border-white transition-colors text-lg"></div><div class="group"><label class="block text-xs font-bold uppercase mb-2">Brief</label><textarea id="form-msg" rows="3" placeholder="Parlons projet..." class="w-full bg-transparent border-b-2 border-black py-4 placeholder-black/50 focus:outline-none focus:border-white transition-colors resize-none text-lg"></textarea></div><button type="submit" class="w-full bg-black text-white py-6 text-xl font-display font-bold uppercase hover:bg-white hover:text-black transition-colors hover-trigger mt-4">Envoyer le message</button></form></div><footer class="mt-24 pt-8 border-t border-black font-bold uppercase">© 2025 ${data.name.split(' ')[0]} // Vanguard Edition</footer></section></main><script>lucide.createIcons();const cursorDot=document.getElementById('cursor-dot');const cursorOutline=document.getElementById('cursor-outline');window.addEventListener('mousemove',(e)=>{const posX=e.clientX;const posY=e.clientY;cursorDot.style.left=\`\${posX}px\`;cursorDot.style.top=\`\${posY}px\`;cursorOutline.animate({left:\`\${posX}px\`,top:\`\${posY}px\`},{duration:500,fill:"forwards"});});const hoverTriggers=document.querySelectorAll('.hover-trigger, a, button, .work-item');hoverTriggers.forEach(trigger=>{trigger.addEventListener('mouseenter',()=>{document.body.classList.add('hover-active');});trigger.addEventListener('mouseleave',()=>{document.body.classList.remove('hover-active');});});<\/script></body></html>`;
         }
 
         // --- DYNAMIC FIELDS ---
@@ -771,10 +864,17 @@
         function createPassionHTML(name="", desc="") {
             return `<div class="passion-item list-item-anim p-4 border border-white/10 rounded bg-white/5 relative group"><button onclick="this.parentElement.remove(); updatePreview()" class="absolute top-2 right-2 p-1 text-red-500 hover:bg-red-500/20 rounded opacity-50 group-hover:opacity-100 transition-all hover-trigger"><i data-lucide="trash-2" class="w-4 h-4"></i></button><div class="text-green-400 text-xs mono mb-2">PASSION / INTÉRÊT</div><input type="text" class="passion-name w-full p-2 mb-2 rounded cyber-input text-sm hover-trigger" placeholder="Titre (ex: Photographie)" value="${name}" oninput="updatePreview()"><textarea class="passion-desc w-full p-2 rounded cyber-input text-xs hover-trigger" rows="2" placeholder="Détails (ex: Paysages urbains...)" oninput="updatePreview()">${desc}</textarea></div>`;
         }
+        
+        // NEW: Social Field Generator
+        function createSocialHTML(platform="LinkedIn", url="#") {
+             return `<div class="social-item list-item-anim flex gap-2 items-center group"><select class="social-platform w-1/3 p-2 rounded cyber-input text-sm hover-trigger" oninput="updatePreview()"><option value="LinkedIn" ${platform==='LinkedIn'?'selected':''}>LinkedIn</option><option value="GitHub" ${platform==='GitHub'?'selected':''}>GitHub</option><option value="Twitter/X" ${platform==='Twitter/X'?'selected':''}>Twitter/X</option><option value="Instagram" ${platform==='Instagram'?'selected':''}>Instagram</option><option value="Behance" ${platform==='Behance'?'selected':''}>Behance</option><option value="Dribbble" ${platform==='Dribbble'?'selected':''}>Dribbble</option><option value="Site Web" ${platform==='Site Web'?'selected':''}>Site Web</option></select><input type="text" class="social-url w-2/3 p-2 rounded cyber-input text-sm hover-trigger" placeholder="URL complète (https://...)" value="${url}" oninput="updatePreview()"><button onclick="this.parentElement.remove(); updatePreview()" class="p-2 text-red-500 hover:bg-red-500/20 rounded opacity-50 group-hover:opacity-100 transition-all hover-trigger"><i data-lucide="trash-2" class="w-4 h-4"></i></button></div>`;
+        }
 
         function addExperience(title, company, desc) { document.getElementById('experience-list').insertAdjacentHTML('beforeend', createExperienceHTML(title, company, desc)); lucide.createIcons(); updatePreview(); }
         function addSkill(name, val) { document.getElementById('skills-list').insertAdjacentHTML('beforeend', createSkillHTML(name, val)); lucide.createIcons(); updatePreview(); }
         function addPassion(name, desc) { document.getElementById('passions-list').insertAdjacentHTML('beforeend', createPassionHTML(name, desc)); lucide.createIcons(); updatePreview(); }
+        function addSocial(platform, url) { document.getElementById('social-list').insertAdjacentHTML('beforeend', createSocialHTML(platform, url)); lucide.createIcons(); updatePreview(); }
+
 
         // --- MEMORY CORE (LocalStorage System) ---
         const STORAGE_KEY = "NEXUS_DATA_V1";
@@ -800,7 +900,16 @@
                 if(data.email) document.getElementById('input-email').value = data.email;
                 if(data.cv) document.getElementById('input-cv').value = data.cv;
 
-                // 2. Restaurer le template choisi (sans forcer le changement de vue immédiat)
+                // 2. Restaurer l'Avatar Personnalisé
+                if(data.avatar) {
+                    customAvatar = data.avatar;
+                    const imgPreview = document.getElementById('uploaded-avatar-preview');
+                    imgPreview.src = customAvatar;
+                    imgPreview.classList.remove('hidden');
+                    document.getElementById('btn-remove-avatar').classList.remove('hidden');
+                }
+
+                // 3. Restaurer le template choisi
                 if (data.currentTemplate) {
                     currentTemplate = data.currentTemplate;
                     const display = document.getElementById('mode-display');
@@ -815,14 +924,16 @@
                     if(selected) selected.classList.add('selected');
                 }
 
-                // 3. Restaurer les listes (Expériences, Skills, Passions)
+                // 4. Restaurer les listes
                 document.getElementById('experience-list').innerHTML = '';
                 document.getElementById('skills-list').innerHTML = '';
                 document.getElementById('passions-list').innerHTML = '';
+                document.getElementById('social-list').innerHTML = ''; // Clear social list
 
                 if (data.experiences) data.experiences.forEach(exp => addExperience(exp.title, exp.company, exp.desc));
                 if (data.skills) data.skills.forEach(skill => addSkill(skill.name, skill.val));
                 if (data.passions) data.passions.forEach(pass => addPassion(pass.name, pass.desc));
+                if (data.socials) data.socials.forEach(soc => addSocial(soc.platform, soc.url)); // Restore socials
 
                 generateNeuralAvatar(data.name || "USER");
                 
@@ -971,6 +1082,8 @@
                 addSkill('Creative Direction', '90'); addSkill('Front-end', '85');
                 addPassion('Photographie', 'Exploration urbaine et portraits argentiques.');
                 addPassion('Basket-Ball', 'Compétition régionale, esprit d\'équipe.');
+                addSocial('LinkedIn', 'https://linkedin.com');
+                addSocial('GitHub', 'https://github.com');
                 generateNeuralAvatar("ALEX STERLING");
                 
                 // Sélection par défaut pour la démo
